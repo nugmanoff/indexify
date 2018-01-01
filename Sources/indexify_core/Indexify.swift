@@ -16,12 +16,13 @@ public final class Indexify {
         fetch()
         runner.wait()
     }
-    
+
     private func fetch() {
         provider.request(.ticker) { (result) in
             switch result {
             case let .success(moyaResponse):
                 let data = moyaResponse.data
+                let dict = data as! [String: Any]
                 print(moyaResponse.description)
                 self.runner.unlock()
             case let .failure(error):
