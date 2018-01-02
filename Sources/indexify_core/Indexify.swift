@@ -6,8 +6,9 @@ public final class Indexify {
     private let provider = MoyaProvider<Service>()
     private let runner = ScriptRunner()
     private var percentages = [(String, Double)]()
+    private var investments = [String: Double]()
     private var totalCap = Double()
-
+    
     public init() {
     }
 
@@ -16,6 +17,27 @@ public final class Indexify {
         getCapitalization(for: threshold)
         runner.wait()
     }
+    
+    // MARK: - Utility functions
+    
+    private func splitDeposit(amount: Double) {
+        if (amount < 0.001) {
+            let key = percentages.first!.0
+            let percent = percentages.first!.1
+            investments[key]! += amount * percent
+            runner.unlock()
+            print(investments)
+            return
+        }
+        percentages.forEach {
+           print(investments[$0.0]!)
+           investments[$0.0]! += amount * $0.1
+        }
+        
+        splitDeposit(amount: amount - investments.flatMap({ $0.value }).reduce(0, +))
+    }
+    
+    // MARK: - API Requests
 
     private func getCapitalization(for threshold: Double) {
         runner.lock()
@@ -31,11 +53,15 @@ public final class Indexify {
                             break
                         }
                         self.percentages.append((symbol, percentage))
+                        self.investments[symbol] = 0.0
                     }
                 } catch {
                     print(error.localizedDescription)
                 }
+                self.percentages.sort(by: { $0.1 > $1.1})
                 print(self.percentages)
+                print()
+                print(self.investments)
                 self.runner.unlock()
             case let .failure(error):
                 print("error ocurred \(error.errorDescription!)")
