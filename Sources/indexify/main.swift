@@ -4,7 +4,7 @@ import Commander
 let indexify = Indexify()
 
 command(
-    Option("amount", default: 100, description: "Amount of money (USD) to invest."),
+    Option("amount", default: 100.0, description: "Amount of money (USD) to invest."),
     Option("threshold", default: 3.0, description: "Threshold percentage of Total Market Cap Index of currency.")
 ) { amount, threshold in
     do {

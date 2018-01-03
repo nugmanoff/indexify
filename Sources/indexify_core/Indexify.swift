@@ -8,39 +8,57 @@ public final class Indexify {
     private var percentages = [(String, Double)]()
     private var investments = [String: Double]()
     private var totalCap = Double()
-    
+
     public init() {
     }
 
-    public func run(amount: Int, threshold: Double) throws {
-        getGlobalData()
-        getCapitalization(for: threshold)
+    public func run(amount: Double, threshold: Double) throws {
+        runner.lock()
+        let queue = DispatchQueue(label: "queue")
+        let sema = DispatchSemaphore(value: 1)
+        
+        queue.async {
+            sema.wait()
+            self.getGlobalData {
+                sema.signal()
+            }
+        }
+        
+        queue.async {
+            sema.wait()
+            self.getCapitalization(for: threshold) {
+                sema.signal()
+            }
+        }
+        
+        queue.async {
+            sema.wait()
+            self.splitDeposit(amount: amount)
+        }
+        
         runner.wait()
     }
-    
+
     // MARK: - Utility functions
     
     private func splitDeposit(amount: Double) {
+        var tempSum = 0.0
         if (amount < 0.001) {
-            let key = percentages.first!.0
-            let percent = percentages.first!.1
-            investments[key]! += amount * percent
+//            investments[percentages.first!.0]! += amount
             runner.unlock()
             print(investments)
             return
         }
         percentages.forEach {
-           print(investments[$0.0]!)
            investments[$0.0]! += amount * $0.1
+           tempSum += amount * $0.1
         }
-        
-        splitDeposit(amount: amount - investments.flatMap({ $0.value }).reduce(0, +))
+        splitDeposit(amount: amount - tempSum)
     }
-    
+
     // MARK: - API Requests
 
-    private func getCapitalization(for threshold: Double) {
-        runner.lock()
+    private func getCapitalization(for threshold: Double, completionHandler: @escaping() -> ()) {
         provider.request(.ticker) { (result) in
             switch result {
             case let .success(moyaResponse):
@@ -60,18 +78,17 @@ public final class Indexify {
                 }
                 self.percentages.sort(by: { $0.1 > $1.1})
                 print(self.percentages)
-                print()
-                print(self.investments)
-                self.runner.unlock()
+                completionHandler()
+//                self.runner.unlock()
             case let .failure(error):
                 print("error ocurred \(error.errorDescription!)")
-                self.runner.unlock()
+                completionHandler()
+//                self.runner.unlock()
             }
         }
     }
 
-    private func getGlobalData() {
-        runner.lock()
+    private func getGlobalData(completionHandler: @escaping() -> ()) {
         provider.request(.global) { (result) in
             switch result {
             case let .success(moyaResponse):
@@ -82,10 +99,12 @@ public final class Indexify {
                 } catch {
                     print(error.localizedDescription)
                 }
-                self.runner.unlock()
+                completionHandler()
+//                self.runner.unlock()
             case let .failure(error):
                 print("error ocurred \(error.errorDescription!)")
-                self.runner.unlock()
+                completionHandler()
+//                self.runner.unlock()
             }
         }
     }
