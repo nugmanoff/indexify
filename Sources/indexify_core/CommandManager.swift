@@ -12,7 +12,6 @@ public final class CommandManager {
 
     private var version = "0.0.1"
     private var group = Group()
-    private let runner = ScriptRunner()
 
     public init() {
         resolveCommands()

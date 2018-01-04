@@ -5,23 +5,23 @@ import Commander
 
 public final class Evaluator: Performable {
     
-    func perform(_ arguments: ArgumentConvertible...) {
-        for argument in arguments {
-            let a = argument as! Double
-            print(a)
-        }
-    }
-    
     private let provider = MoyaProvider<Service>()
     private var percentages: [(String, Double)] = []
     private var investments: [String: Double] = [:]
     private var totalCap = Double()
     private var runner = ScriptRunner()
 
-    public init() {
+    public init(with runner: ScriptRunner) {
+        self.runner = runner
+    }
+    
+    func perform(_ arguments: ArgumentConvertible...) {
+        let amount = arguments[0] as! Double
+        let threshold = arguments[1] as! Double
+        perform(amount: amount, threshold: threshold)
     }
 
-    public func perform(amount: Double, threshold: Double) throws {
+    public func perform(amount: Double, threshold: Double) {
 //        let s = String(String: getpass("Enter your API Key:"), encoding: .utf8)
 //        let b = String(String: getpass("Enter your Secret:"), encoding: .utf8)
         runner.lock()
@@ -50,7 +50,7 @@ public final class Evaluator: Performable {
         runner.wait()
     }
 
-    // MARK: - Utility functions
+    // MARK: - Private
 
     private func splitDeposit(amount: Double) {
         var tempSum = 0.0
@@ -66,8 +66,8 @@ public final class Evaluator: Performable {
         }
         splitDeposit(amount: amount - tempSum)
     }
-
-    // MARK: - API Requests
+    
+    // MARK: - Network Requests
 
     private func getCapitalization(for threshold: Double, completionHandler: @escaping() -> Void) {
         provider.request(.ticker) { (result) in
