@@ -6,9 +6,12 @@
 //
 
 import Foundation
+import Commander
 
 public final class Authorizer: Performable {
-    func peform() throws {
+    
+    func perform(_ arguments: ArgumentConvertible...) {
+        print(arguments)
     }
     
 }

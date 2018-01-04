@@ -51,19 +51,14 @@ extension Command {
         case .eval:
             return command(
                 Option("amount", default: 100.0, description: "Amount of money (USD) to invest."),
-                Option("threshold", default: 3.0, description: "Threshold percentage of Total Market Cap Index of currency.")
-            ) { amount, threshold in
-                print("amount is \(amount) & threshold is \(threshold)")
+                Option("threshold", default: 3.0, description: "Threshold percentage of Total Market Cap Index of currency."))
+            { amount, threshold in
+                self.task.perform(amount, threshold)
             }
         case .auth:
             return command {
-                print("hello")
+                self.task.perform()
             }
         }
     }
-
-//    var block: @autoclosure() throws -> () {
-//        return task.peform()
-//    }
-
 }

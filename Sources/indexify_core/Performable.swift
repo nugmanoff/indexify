@@ -5,8 +5,8 @@
 //  Created by Aidar Nugmanov on 1/4/18.
 //
 
-import Foundation
+import Commander
 
 internal protocol Performable {
-    func peform() throws
+    func perform(_ arguments: ArgumentConvertible...)
 }

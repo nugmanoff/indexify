@@ -1,20 +1,23 @@
 import Foundation
 import Moya
 import Alamofire
+import Commander
 
 public final class Evaluator: Performable {
     
-    func peform() throws {
-        
+    func perform(_ arguments: ArgumentConvertible...) {
+        for argument in arguments {
+            let a = argument as! Double
+            print(a)
+        }
     }
     
     private let provider = MoyaProvider<Service>()
-    
     private var percentages: [(String, Double)] = []
     private var investments: [String: Double] = [:]
     private var totalCap = Double()
     private var runner = ScriptRunner()
-    
+
     public init() {
     }
 
