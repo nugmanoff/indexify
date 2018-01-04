@@ -9,11 +9,11 @@ import Foundation
 import Commander
 
 public final class CommandManager {
-    
+
     private var version = "0.0.1"
     private var group = Group()
     private let runner = ScriptRunner()
-    
+
     public init() {
         resolveCommands()
     }
@@ -22,18 +22,17 @@ public final class CommandManager {
         self.init()
         self.version = version
     }
-    
+
     public func run() {
         group.run(version)
     }
-    
+
     private func resolveCommands() {
         group.add(command: .auth)
         group.add(command: .eval)
     }
-    
+
     private func resolveVersion() {
-        
     }
-    
+
 }

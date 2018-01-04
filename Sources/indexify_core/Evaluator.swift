@@ -18,7 +18,6 @@ public final class Evaluator: Performable {
     public init() {
     }
 
-
     public func perform(amount: Double, threshold: Double) throws {
 //        let s = String(String: getpass("Enter your API Key:"), encoding: .utf8)
 //        let b = String(String: getpass("Enter your Secret:"), encoding: .utf8)

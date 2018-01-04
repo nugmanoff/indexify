@@ -3,6 +3,7 @@ disabled_rules:
   - force_try
   - force_cast
   - operator_whitespace
+  - trailing_whitespace
 
 included:
   - Sources

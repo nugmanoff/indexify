@@ -18,7 +18,7 @@ extension Command {
     static var all: [Command] {
         return [.eval, .auth]
     }
-    
+
     var name: String {
         switch self {
         case .eval:
@@ -27,7 +27,7 @@ extension Command {
             return "auth"
         }
     }
-    
+
     var description: String {
         switch self {
         case .eval:
@@ -36,7 +36,7 @@ extension Command {
             return "Authorize to gain access to trading functions using Poloniex"
         }
     }
-    
+
     var task: Performable {
         switch self {
         case .eval:
@@ -45,7 +45,7 @@ extension Command {
             return Authorizer()
         }
     }
-    
+
     var wrapper: CommandType {
         switch self {
         case .eval:
@@ -61,7 +61,7 @@ extension Command {
             }
         }
     }
-    
+
 //    var block: @autoclosure() throws -> () {
 //        return task.peform()
 //    }
