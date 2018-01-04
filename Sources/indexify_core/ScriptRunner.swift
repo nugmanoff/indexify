@@ -8,8 +8,10 @@
 import Foundation
 
 public final class ScriptRunner {
+    
     private var count = 0
     private let runLoop = RunLoop.current
+    
     public func lock() {
         count += 1
     }

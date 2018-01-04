@@ -13,11 +13,11 @@ let package = Package(
     targets: [
         .target(
             name: "indexify",
-            dependencies: ["indexify_core", "Commander"]
+            dependencies: ["indexify_core"]
         ),
         .target(
             name: "indexify_core",
-            dependencies: ["Alamofire", "Moya"]
+            dependencies: ["Alamofire", "Moya", "Commander"]
         )
     ]
 )
