@@ -8,8 +8,8 @@
 import Foundation
 
 public final class Authorizer: Performable {
-    
-    func perform() throws {
+    func peform() throws {
     }
-        
+    
+    
 }

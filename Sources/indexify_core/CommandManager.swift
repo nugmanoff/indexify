@@ -12,17 +12,15 @@ public final class CommandManager {
     
     private var version = "0.0.1"
     private var group = Group()
-    private final let amount = 100.0
-    private final let threshold = 3.0
     private let runner = ScriptRunner()
     
-    init() {
+    public init() {
         resolveCommands()
     }
 
-    convenience init(with version: String) {
-        self.version = version
+    public convenience init(with version: String) {
         self.init()
+        self.version = version
     }
     
     public func run() {
@@ -30,26 +28,12 @@ public final class CommandManager {
     }
     
     private func resolveCommands() {
-
-        let eval = Evaluator()
+        group.add(command: .auth)
+        group.add(command: .eval)
+    }
+    
+    private func resolveVersion() {
         
-        let calc = command(
-            Option("amount", default: amount, description: "Amount of money (USD) to invest."),
-            Option("threshold", default: threshold, description: "Threshold percentage of Total Market Cap Index of currency.")
-        ) { amount, threshold in
-            do {
-//                try indexify.run(amount: amount, threshold: threshold)
-            } catch {
-                print("Whoops! An error occurred: \(error)")
-            }
-        }
-        
-        let auth = command {
-            print("authorized")
-        }
-
-        group.addCommand("calc", "used to calculate deposit splitting", calc)
-        group.addCommand("auth", "used to authorize user to Poloniex API", auth)
     }
     
 }
