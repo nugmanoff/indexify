@@ -51,8 +51,8 @@ extension Command {
         switch self {
         case .eval:
             return command(
-                Option("amount", default: 100.0, description: "Amount of money (USD) to invest."),
-                Option("threshold", default: 3.0, description: "Threshold percentage of Total " +
+                Option("amount", default: 100.0, flag: "a", description: "Amount of money (USD) to invest."),
+                Option("threshold", default: 3.0, flag: "t", description: "Threshold percentage of Total " +
                                                                "Market Cap Index of currency.")) { amount, threshold in
                 self.task.perform(amount, threshold)
             }

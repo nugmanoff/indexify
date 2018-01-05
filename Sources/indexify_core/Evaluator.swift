@@ -15,13 +15,13 @@ public final class Evaluator: Performable {
         self.runner = runner
     }
     
-    func perform(_ arguments: ArgumentConvertible...) {
+    public func perform(_ arguments: ArgumentConvertible...) {
         let amount = arguments[0] as! Double
         let threshold = arguments[1] as! Double
         perform(amount: amount, threshold: threshold)
     }
 
-    public func perform(amount: Double, threshold: Double) {
+    private func perform(amount: Double, threshold: Double) {
 //        let s = String(String: getpass("Enter your API Key:"), encoding: .utf8)
 //        let b = String(String: getpass("Enter your Secret:"), encoding: .utf8)
         runner.lock()
@@ -34,19 +34,17 @@ public final class Evaluator: Performable {
                 sema.signal()
             }
         }
-
         queue.async {
             sema.wait()
             self.getCapitalization(for: threshold) {
                 sema.signal()
             }
         }
-
         queue.async {
             sema.wait()
             self.splitDeposit(amount: amount)
+            runner.unlock()
         }
-
         runner.wait()
     }
 
@@ -89,11 +87,9 @@ public final class Evaluator: Performable {
                 }
                 self.percentages.sort(by: { $0.1 > $1.1})
                 completionHandler()
-//                self.runner.unlock()
             case let .failure(error):
                 print("error ocurred \(error.errorDescription!)")
                 completionHandler()
-//                self.runner.unlock()
             }
         }
     }
@@ -109,11 +105,9 @@ public final class Evaluator: Performable {
                     print(error.localizedDescription)
                 }
                 completionHandler()
-//                self.runner.unlock()
             case let .failure(error):
                 print("error ocurred \(error.errorDescription!)")
                 completionHandler()
-//                self.runner.unlock()
             }
         }
     }
