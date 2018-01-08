@@ -43,7 +43,7 @@ public final class Evaluator: Performable {
         queue.async {
             sema.wait()
             self.splitDeposit(amount: amount)
-            runner.unlock()
+            self.runner.unlock()
         }
         runner.wait()
     }
