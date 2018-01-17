@@ -18,7 +18,7 @@ Minutiae command-line tool build in educational purposes.
 
 ## Installation
 
-The easiest way to install Test Drive is using Swift Package Manager:
+The easiest way to install Indexify is using Swift Package Manager:
 
 ```
 $ git clone git@github.com:nugmanoff/indexify.git
