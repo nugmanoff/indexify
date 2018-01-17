@@ -7,14 +7,8 @@ Minutiae command-line tool build in educational purposes.
 
 **Features**
 
-- [X] Quickly get indexing of crypto-market cap.
-- [X] Set threshold value for indexing percentage of cryptocurrencies.
-
-## Usage
-
-```
-🏎 Development in progress
-```
+- Quickly get indexing of crypto-market cap.
+- Set threshold value for indexing percentage of cryptocurrencies.
 
 ## Installation
 
@@ -26,6 +20,13 @@ $ cd indexify
 $ swift build -c release -Xswiftc -static-stdlib
 $ cp -f .build/release/indexify /usr/local/bin/indexify
 ```
+
+## Dependencies
+
+- [Alamofire](https://github.com/Alamofire/Alamofire)   
+- [Moya](https://github.com/Moya/Moya)   
+- [Commander](https://github.com/kylef/Commander)   
+- [SwiftLint](https://github.com/realm/SwiftLint)
 
 ## Help, feedback or suggestions?
 
