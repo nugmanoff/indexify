@@ -26,8 +26,6 @@ extension EvaluatorError: PrintableError {
 public final class Evaluator: Performable {
     
     private let provider = MoyaProvider<Service>()
-    private var percentages: [Crypto] = []
-    private var investments: [Crypto] = []
     private var cryptos: [Crypto] = []
     private var totalCap = Double()
     private var runner = ScriptRunner()
