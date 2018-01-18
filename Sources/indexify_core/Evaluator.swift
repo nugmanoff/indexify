@@ -6,8 +6,9 @@ import Commander
 public final class Evaluator: Performable {
     
     private let provider = MoyaProvider<Service>()
-    private var percentages: [(String, Double)] = []
-    private var investments: [String: Double] = [:]
+    private var percentages: [Crypto] = []
+    private var investments: [Crypto] = []
+    private var cryptos: [Crypto] = []
     private var totalCap = Double()
     private var runner = ScriptRunner()
 
@@ -23,7 +24,6 @@ public final class Evaluator: Performable {
 
     private func perform(amount: Double, threshold: Double) {
 //        let s = String(String: getpass("Enter your API Key:"), encoding: .utf8)
-//        let b = String(String: getpass("Enter your Secret:"), encoding: .utf8)
         runner.lock()
         let queue = DispatchQueue(label: "queue")
         let sema = DispatchSemaphore(value: 1)
@@ -53,16 +53,23 @@ public final class Evaluator: Performable {
     private func splitDeposit(amount: Double) {
         var tempSum = 0.0
         if amount < 0.001 {
-            investments[percentages.first!.0]! += amount
-            runner.unlock()
-            print(investments)
+            cryptos[0].investment += amount
+            prettyPrint()
             return
         }
-        percentages.forEach {
-           investments[$0.0]! += amount * $0.1
-           tempSum += amount * $0.1
+        for crypto in cryptos {
+            crypto.investment += amount * crypto.percentage
+            tempSum += amount * crypto.percentage
         }
         splitDeposit(amount: amount - tempSum)
+    }
+    
+    private func prettyPrint() {
+        for crypto in cryptos {
+            print("\(crypto.symbol), percent: \(crypto.percentage), investment: \(crypto.investment), ")
+        }
+        print()
+        runner.unlock()
     }
     
     // MARK: - Network Requests
@@ -71,21 +78,17 @@ public final class Evaluator: Performable {
         provider.request(.ticker) { (result) in
             switch result {
             case let .success(moyaResponse):
-                do {
-                    let response = try moyaResponse.mapJSON(failsOnEmptyData: false) as! [[String: Any]]
-                    for entry in response {
-                        let percentage = (Double)(entry["market_cap_usd"] as! String)! / self.totalCap
-                        let symbol = entry["symbol"] as! String
-                        if percentage < threshold/100 {
+                if let cryptos = try? JSONDecoder().decode([Crypto].self, from: moyaResponse.data) {
+                    for crypto in cryptos {
+                        let percentage = Double(crypto.marketCap)! / self.totalCap
+                        guard percentage > threshold * 0.01 else {
                             break
                         }
-                        self.percentages.append((symbol, percentage))
-                        self.investments[symbol] = 0.0
+                        crypto.percentage = percentage
+                        self.cryptos.append(crypto)
                     }
-                } catch {
-                    print(error.localizedDescription)
                 }
-                self.percentages.sort(by: { $0.1 > $1.1})
+                self.cryptos.sort(by: { $0.percentage > $1.percentage})
                 completionHandler()
             case let .failure(error):
                 print("error ocurred \(error.errorDescription!)")
@@ -102,7 +105,7 @@ public final class Evaluator: Performable {
                     let dict = try moyaResponse.mapJSON(failsOnEmptyData: false) as! [String: Any]
                     self.totalCap = dict["total_market_cap_usd"] as! Double
                 } catch {
-                    print(error.localizedDescription)
+                    print("error ocurred \(error.localizedDescription)")
                 }
                 completionHandler()
             case let .failure(error):
