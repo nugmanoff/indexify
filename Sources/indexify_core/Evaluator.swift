@@ -3,6 +3,26 @@ import Moya
 import Alamofire
 import Commander
 
+// MARK: - Error
+
+public enum EvaluatorError {
+    case failedToDecodeServerResponse
+    case networkError
+}
+
+extension EvaluatorError: PrintableError {
+    public var message: String {
+        switch self {
+        case .failedToDecodeServerResponse:
+            return "Decoding error occurred"
+        case .networkError:
+            return "Network error occurred"
+        }
+    }
+}
+
+// MARK: - Evaluator
+
 public final class Evaluator: Performable {
     
     private let provider = MoyaProvider<Service>()
@@ -11,6 +31,8 @@ public final class Evaluator: Performable {
     private var cryptos: [Crypto] = []
     private var totalCap = Double()
     private var runner = ScriptRunner()
+    
+    // MARK: - Init
 
     public init(with runner: ScriptRunner) {
         self.runner = runner
@@ -23,7 +45,6 @@ public final class Evaluator: Performable {
     }
 
     private func perform(amount: Double, threshold: Double) {
-//        let s = String(String: getpass("Enter your API Key:"), encoding: .utf8)
         runner.lock()
         let queue = DispatchQueue(label: "queue")
         let sema = DispatchSemaphore(value: 1)
@@ -66,7 +87,7 @@ public final class Evaluator: Performable {
     
     private func prettyPrint() {
         for crypto in cryptos {
-            print("\(crypto.symbol), percent: \(crypto.percentage), investment: \(crypto.investment), ")
+            print("\(crypto.symbol), investment: \(crypto.investment), ")
         }
         print()
         runner.unlock()
@@ -105,11 +126,11 @@ public final class Evaluator: Performable {
                     let dict = try moyaResponse.mapJSON(failsOnEmptyData: false) as! [String: Any]
                     self.totalCap = dict["total_market_cap_usd"] as! Double
                 } catch {
-                    print("error ocurred \(error.localizedDescription)")
+                    print(EvaluatorError.failedToDecodeServerResponse)
                 }
                 completionHandler()
-            case let .failure(error):
-                print("error ocurred \(error.errorDescription!)")
+            case .failure:
+                print(EvaluatorError.networkError)
                 completionHandler()
             }
         }

@@ -21,7 +21,7 @@ extension Service: TargetType {
             return URL(string: "https://api.coinmarketcap.com/v1")!
         }
     }
-    var path: String {
+    var path: String { 
         switch self {
         case .ticker:
             return "/ticker/"
