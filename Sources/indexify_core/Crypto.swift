@@ -23,4 +23,3 @@ class Crypto: Decodable {
         symbol     = try values.decode(String.self, forKey: .symbol)
     }
 }
-
