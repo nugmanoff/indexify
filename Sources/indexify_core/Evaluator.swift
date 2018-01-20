@@ -25,6 +25,8 @@ extension EvaluatorError: PrintableError {
 
 public final class Evaluator: Performable {
     
+    private typealias Error = EvaluatorError
+    
     private let provider = MoyaProvider<Service>()
     private var cryptos: [Crypto] = []
     private var totalCap = Double()
@@ -124,11 +126,11 @@ public final class Evaluator: Performable {
                     let dict = try moyaResponse.mapJSON(failsOnEmptyData: false) as! [String: Any]
                     self.totalCap = dict["total_market_cap_usd"] as! Double
                 } catch {
-                    print(EvaluatorError.failedToDecodeServerResponse)
+                    print(Error.failedToDecodeServerResponse)
                 }
                 completionHandler()
             case .failure:
-                print(EvaluatorError.networkError)
+                print(Error.networkError)
                 completionHandler()
             }
         }

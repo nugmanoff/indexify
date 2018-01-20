@@ -18,7 +18,7 @@ let package = Package(
         ),
         .target(
             name: "indexify_core",
-            dependencies: ["Alamofire", "Moya", "Commander"]
+            dependencies: ["Alamofire", "Moya", "Commander", "Releases"]
         )
     ]
 )

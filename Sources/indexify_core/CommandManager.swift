@@ -7,14 +7,38 @@
 
 import Foundation
 import Commander
+import Releases
+
+// MARK: - Error
+
+public enum CommandManagerError {
+    case failedToResolveVersion
+}
+
+extension CommandManagerError: PrintableError {
+    public var message: String {
+        switch self {
+        case .failedToResolveVersion:
+            return "Failed to resolve release version"
+        }
+    }
+}
+
+// MARK: - CommandManager
 
 public final class CommandManager {
+    
+    private typealias Error = CommandManagerError
 
-    private var version = "0.0.1"
+    private var version = String()
     private var group = Group()
+    private var repo = "https://github.com/nugmanoff/indexify.git"
+    
+    // MARK: - Init
 
     public init() {
         resolveCommands()
+        resolveVersion()
     }
 
     public convenience init(with version: String) {
@@ -25,6 +49,8 @@ public final class CommandManager {
     public func run() {
         group.run(version)
     }
+    
+    // MARK: - Private
 
     private func resolveCommands() {
         group.add(command: .auth)
@@ -32,6 +58,15 @@ public final class CommandManager {
     }
 
     private func resolveVersion() {
+        do {
+            let url = URL(string: repo)!
+            let releases = try! Releases.versions(for: url)
+            guard let latestRelease = releases.last?.string else {
+                throw Error.failedToResolveVersion
+            }
+            version = latestRelease
+        } catch {
+            print(Error.failedToResolveVersion)
+        }
     }
-
 }
