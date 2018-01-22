@@ -7,8 +7,6 @@
 
 import Foundation
 
-import Foundation
-
 public protocol PrintableError: Error, Equatable, CustomStringConvertible {
     var message: String { get }
 }
